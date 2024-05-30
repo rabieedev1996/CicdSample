@@ -3,7 +3,7 @@ name: Build and Deploy to Private Server
 on:
   push:
     branches:
-      - release
+      - Release
 
 jobs:
   deploy:
