@@ -3,7 +3,7 @@ name: Build and Deploy to Private Server
 on:
   push:
     branches:
-      - release
+      - Release
 
 jobs:
   deploy:
@@ -24,3 +24,16 @@ jobs:
           target: "~/src"
         env:
           CONNECT_TIMEOUT: 60
+      - name: Build Docker image on server
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 22
+          script: |
+            cd ~/src
+            docker build -t cicdsample .
+            docker stop cicdsample || true
+            docker rm cicdsample || true
+            docker run -d -p 127.0.0.1:8080:80 --restart unless-stopped --name cicdsample cicdsample 
